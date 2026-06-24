@@ -1,6 +1,69 @@
 ---
+const moods = [
+  { emoji: '😔', label: 'Feeling down' },
+  { emoji: '😐', label: 'Feeling neutral' },
+  { emoji: '🙂', label: 'Feeling alright' },
+  { emoji: '😄', label: 'Feeling great' },
+];
 ---
-<article class="card mood-card">
-  <h2>Mood</h2>
-  <p>How are you feeling right now?</p>
-</article>
+<div class="card">
+  <div class="card-label">✦ MOOD</div>
+  <div class="emojis">
+    {moods.map((mood, i) => (
+      <span
+        class={`emoji ${i === 2 ? 'active' : ''}`}
+        data-label={mood.label}
+        data-index={i}
+      >
+        {mood.emoji}
+      </span>
+    ))}
+  </div>
+  <div class="mood-label" id="mood-label">Feeling alright</div>
+</div>
+
+<script>
+  //@ts-nocheck
+  const emojis = document.querySelectorAll('.emoji');
+  const label = document.getElementById('mood-label');
+
+  emojis.forEach((emoji) => {
+    emoji.addEventListener('click', () => {
+      emojis.forEach(e => e.classList.remove('active'));
+      emoji.classList.add('active');
+      label.textContent = (emoji as HTMLElement).dataset.label;
+    });
+  });
+</script>
+
+<style>
+  .card{
+    background: #D4CAEE;
+    border-radius: var(--card-radius);
+    padding: 14px 16px;
+  }
+
+  .card-label{
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: #8873B8;
+    margin-bottom: 10px;
+  }
+
+  .emojis{
+    display:flex;
+    gap: 6px;
+    align-items:center;
+  }
+
+  .emojis-active{
+    opacity: 1;
+  }
+
+  .mod-label{
+    font-size: 0.65rem;
+    color: #8873B8;
+    margin-top: 8px;
+    text-align: center;
+  }
+</style>

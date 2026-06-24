@@ -1,7 +1,39 @@
 ---
+const quotes = [
+  { text: "Write what disturbs you, what you fear, what you have not been willing to speak about.", author: "Natalie Goldberg" },
+  { text: "Journal writing is a voyage to the interior.", author: "Christina Baldwin" },
+  { text: "Fill your paper with the breathings of your heart.", author: "William Wordsworth" },
+  { text: "Write hard and clear about what hurts.", author: "Ernest Hemingway" },
+  { text: "The act of writing is the act of discovering what you believe.", author: "David Hare" },
+];
+
+const hoy = new Date().getDay();
+const quote =quotes[hoy % quotes.length];
 ---
-<article class="card quote-card">
-  <h2>Quote</h2>
-  <p>“The best way to predict the future is to create it.”</p>
-  <span>— Peter Drucker</span>
-</article>
+
+<div class="card">
+  <div class="card-label">Daily Thought</div>
+  <div class="quote-mark">""</div>
+  <p class="quote-tet">"{quote.text}"</p>
+  <p class="quote-author">-{quote.author}</p>
+</div>
+
+<style>
+  .card{
+    background: #C8D9C4;
+    border-radius: var(--card-radius);
+    padding: 14px 16px;
+    position: relative;
+  }
+
+  .card-label{
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: #4A6845;
+    margin-bottom: 10px;
+  }
+
+  .quote-mark{
+    
+  }
+</style>

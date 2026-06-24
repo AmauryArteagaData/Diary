@@ -1,6 +1,45 @@
 ---
+const fecha = new Date();
+
+const mes = fecha.toLocaleString('en-US', { month: 'long' }).toUpperCase();
+const dia = fecha.getDate();
+const anio = fecha.getFullYear();
+const diaSemana = fecha.toLocaleString('en-US', { weekday: 'long' });
 ---
-<article class="card date-card">
-  <h2>Today</h2>
-  <p>{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-</article>
+<div class="card">
+  <div class="mes">{anio}</div>
+  <div class="dia">{dia}</div>
+  <div class="dia-semana">{diaSemana}</div>
+</div>
+
+<style>
+  .card{
+    background: var(--warm-brown-dark);
+    border-radius: var(--card-radius);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .mes{
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: #C4956A;
+  }
+
+  .dia{
+    font-siz: 3rem;
+    font-weight: 500;
+    color: white;
+    line-height: 1;
+    margin: 4px 0;
+  }
+
+  .dia-semana{
+    font-size: 0.7rem;
+    color: #C4956A;
+  }
+</style>
