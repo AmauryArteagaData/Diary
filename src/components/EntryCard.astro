@@ -1,7 +1,10 @@
 ---
+const fecha = new Date().toLocaleDateString('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric'
+});
 ---
-<article class="card entry-card">
-  <h2>New Entry</h2>
-  <p>Capture today’s mood, thoughts, or anything you want to remember.</p>
-  <button>Write me</button>
-</article>
+<div class="card">
+  <div class="card-label">Today Entry</div>
+</div>
