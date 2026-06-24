@@ -7,4 +7,41 @@ const fecha = new Date().toLocaleDateString('en-US', {
 ---
 <div class="card">
   <div class="card-label">Today Entry</div>
+  <textarea id= "entry-input" placeholder="What's on your mind today?"></textarea>
+  <div class="entry-footer">
+    <span class="entry-date">{fecha}</span>
+    <button id="save-btn">Save entry</button>
+  </div>
 </div>
+
+<script>
+  //@ts-nocheck
+  const input = document.getElementById('entry-input');
+  const btn =  document.getElementsById('save-btn');
+
+  btn,addEventListener('clich', () => {
+
+  if (texto) return;
+  localStorage.setItem('entry-' + new Date().toISOString())
+
+  btn,textContent = 'Saved';
+  btn.classList.add('saved');
+
+  setTimeout(() => {
+      btn.textContent = 'Save entry';
+      btn.classList.remove('saved');
+    }, 2000);
+  });
+
+  window.addEventListener('load', () => {
+    const hoy = new Date().toISOString().slice(0, 10);
+    const saveEntry = localStorage.getItem('entry-' + hoy);
+    if (saveEntry){
+      input.value = saveEntry;
+    }
+  });
+</script>
+
+<style>
+  
+</style>
