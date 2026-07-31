@@ -1,6 +1,25 @@
 ---
+const fecha = new Date().toLocaleDateString('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric'
+});
 ---
-<article class="card recent-card">
-  <h2>Recent</h2>
-  <p>See your latest entries at a glance.</p>
-</article>
+
+<div class="bg-white rounded-lg shadow p-4 flex flex-col gap-3">
+  <h2 class="text-lg font-bold text-diaryBlue">Recent Entries</h2>
+  <ul id="recent-list" class="list-disc pl-5 text-sm text-gray-700">
+    <!-- Aquí se insertarán las entradas -->
+  </ul>
+</div>
+
+<script>
+  //@ts-nocheck
+  window.addEventListener("load", () => {
+    const recentList = document.getElementById("recent-list");
+    recentList.innerHTML = "";
+
+    //traemos todas las claves del LocalStorage que empiecen con entry
+
+  })
+</script>

@@ -17,17 +17,22 @@ const fecha = new Date().toLocaleDateString('en-US', {
 <script>
   //@ts-nocheck
   const input = document.getElementById('entry-input');
-  const btn =  document.getElementsById('save-btn');
+  const btn = document.getElementById('save-btn');
 
-  btn,addEventListener('clich', () => {
+  btn.addEventListener('click', () => {
+    const texto = input.value.trim();
+    if (!texto) {
+      alert("Escribe algo antes de guardar.");
+      return;
+    }
 
-  if (texto) return;
-  localStorage.setItem('entry-' + new Date().toISOString())
+    const hoy = new Date().toISOString().slice(0, 10);
+    localStorage.setItem('entry-' + hoy, texto);
 
-  btn,textContent = 'Saved';
-  btn.classList.add('saved');
+    btn.textContent = 'Saved';
+    btn.classList.add('saved');
 
-  setTimeout(() => {
+    setTimeout(() => {
       btn.textContent = 'Save entry';
       btn.classList.remove('saved');
     }, 2000);
@@ -35,13 +40,72 @@ const fecha = new Date().toLocaleDateString('en-US', {
 
   window.addEventListener('load', () => {
     const hoy = new Date().toISOString().slice(0, 10);
-    const saveEntry = localStorage.getItem('entry-' + hoy);
-    if (saveEntry){
-      input.value = saveEntry;
+    const savedEntry = localStorage.getItem('entry-' + hoy);
+    if (savedEntry) {
+      input.value = savedEntry;
     }
   });
 </script>
 
 <style>
-  
+  .card{
+    background: var(--warm-brown-dark);
+    border-radius: var(--card-radius);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.80rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 15);
+  }
+
+  .card-label{
+    font-size: 1rem;
+    font-weight: bold;
+    color: #C4956A;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  textarea{
+    width: 100%;
+    min-height: 120px;
+    border: 1px solid #C4956A;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    resize: vertical;
+    background: #fff;
+    color: #333;
+  }
+
+  .entry-footer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .entry-date{
+    font-size: 0.8rem;
+    color: #C4956A;
+  }
+
+  button{
+    background: #f5cfa6;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0,2s ease, background 0.3s ease;
+  }
+
+  button:hover{
+    background: #fbb76f;
+    transform: scale(1.05);
+  }
+
+  button.saved{
+    background: #00BB7E;
+  }
 </style>
