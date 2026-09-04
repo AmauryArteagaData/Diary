@@ -7,4 +7,69 @@ const fecha = new Date().toLocaleDateString('en-US', {
 ---
 <div class="card">
   <div class="card-label">Today Entry</div>
+  <p class="date">{fecha}</p>
+  <textarea class="entry-box" placeholder="What's on your mind today?"></textarea>
+  <button class="save-btn">Save Entry</button>
 </div>
+
+<style>
+  .card{
+    background: #F9E0D9;
+    border-radius: var(--card-radius);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .card-label{
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: #A65C4A;
+  }
+
+  .date{
+    font-size: 0.65rem;
+    color: #A65C4A;
+  }
+
+  entry-box{
+    border: 1px solid #E0B7A4;
+    border-radius: 6px;
+    padding: 0.5rem;
+    min-height: 80px;
+    resize: 0.85rem;
+    color: #333;
+  }
+
+  .save-btn{
+    background: #A65C4A;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .save-btn:hover{
+    background: #8C4E3D;
+  }
+</style>
+
+<script>
+  //@ts-nocheck
+  const textarea= document.getElementById('entry-box');
+  const saveBtn= document.getElementById('save-btn');
+  const todayKey= entry-$(new Date().toLocaleDateString('en-US'));
+
+  const saved= localStorage.getItem(todayKey);
+  if (saved){
+    textarea.value = saved;
+  }
+
+  saveBtn?.addEventListener('click', () => {
+    localStorage.setItem(todayKey, textarea.value);
+    alert('Entry saved');
+  });
+</script>
