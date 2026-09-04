@@ -1,6 +1,129 @@
 ---
 ---
-<article class="card themes-card">
-  <h2>Themes</h2>
-  <p>Explore recurring thoughts and personal growth topics.</p>
-</article>
+
+<div class="card themes-card">
+  <div class="card-header">
+    <div class="card-label">✦ FREQUENT THEMES</div>
+    <span class="themes-count" id="themes-total-badge">0 tags</span>
+  </div>
+
+  <div class="themes-container" id="themes-container">
+    <div class="themes-empty">No tags yet. Add #tags to your entries to reveal patterns.</div>
+  </div>
+</div>
+
+<style>
+  .card {
+    background: #D4E7EE;
+    border-radius: var(--card-radius);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(61, 104, 126, 0.08);
+    min-height: 110px;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .card-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: #3D687E;
+    font-weight: 700;
+  }
+
+  .themes-count {
+    font-size: 0.65rem;
+    color: #3D687E;
+    opacity: 0.8;
+    font-weight: 500;
+  }
+
+  .themes-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-content: flex-start;
+    flex-grow: 1;
+  }
+
+  .theme-pill {
+    background: rgba(61, 104, 126, 0.12);
+    color: #2D5062;
+    padding: 3px 9px;
+    border-radius: 9999px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+  }
+
+  .theme-pill:hover {
+    background: rgba(61, 104, 126, 0.22);
+    transform: translateY(-1px);
+  }
+
+  .pill-count {
+    background: #3D687E;
+    color: #FFFFFF;
+    border-radius: 9999px;
+    padding: 0 5px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .themes-empty {
+    font-size: 0.65rem;
+    color: #3D687E;
+    opacity: 0.8;
+    line-height: 1.4;
+    font-style: italic;
+    margin: auto 0;
+  }
+</style>
+
+<script>
+  import { getAllEntries, extractThemes } from '../utils/diaryStorage.js';
+
+  const themesContainer = document.querySelector<HTMLElement>('#themes-container');
+  const themesBadge = document.querySelector<HTMLElement>('#themes-total-badge');
+
+  function updateThemesUI() {
+    const entries = getAllEntries();
+    const themes = extractThemes(entries);
+
+    if (themesBadge) {
+      themesBadge.textContent = `${themes.length} topic${themes.length === 1 ? '' : 's'}`;
+    }
+
+    if (!themesContainer) return;
+
+    if (themes.length === 0) {
+      themesContainer.innerHTML = '<div class="themes-empty">No tags yet. Add #tags to your entries to reveal patterns.</div>';
+      return;
+    }
+
+    themesContainer.innerHTML = '';
+    themes.slice(0, 6).forEach(({ tag, count }) => {
+      const pill = document.createElement('div');
+      pill.className = 'theme-pill';
+      pill.innerHTML = `<span>${tag}</span> <span class="pill-count">${count}</span>`;
+      themesContainer.appendChild(pill);
+    });
+  }
+
+  updateThemesUI();
+
+  window.addEventListener('diary:entry-updated', () => {
+    updateThemesUI();
+  });
+</script>

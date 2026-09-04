@@ -7,52 +7,65 @@ const quotes = [
   { text: "The act of writing is the act of discovering what you believe.", author: "David Hare" },
 ];
 
-const hoy = new Date().getDay();
-const quote =quotes[hoy % quotes.length];
+const hoy = new Date().getDate();
+const quote = quotes[hoy % quotes.length];
 ---
 
-<div class="card">
-  <div class="card-label">Daily Thought</div>
-  <div class="quote-mark">""</div>
-  <p class="quote-tet">"{quote.text}"</p>
-  <p class="quote-author">-{quote.author}</p>
+<div class="card quote-card">
+  <div class="card-label">✦ DAILY THOUGHT</div>
+  <div class="quote-mark" aria-hidden="true">“</div>
+  <p class="quote-text">"{quote.text}"</p>
+  <p class="quote-author">— {quote.author}</p>
 </div>
 
 <style>
-  .card{
+  .card {
     background: #C8D9C4;
     border-radius: var(--card-radius);
     padding: 14px 16px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(74, 104, 69, 0.08);
+    overflow: hidden;
   }
 
-  .card-label{
-    font-size: 0.6rem;
+  .card-label {
+    font-size: 0.65rem;
     letter-spacing: 0.12em;
     color: #4A6845;
-    margin-bottom: 10px;
+    font-weight: 700;
+    margin-bottom: 8px;
   }
 
-  .quote-mark{
+  .quote-mark {
     position: absolute;
-    top: 10px;
-    right:14px;
-    font-size: 2rem;
-    color: rgba(74, 104, 60, 0.15)
-    font-family: georgia, serif;
+    top: -2px;
+    right: 12px;
+    font-size: 3rem;
+    color: rgba(74, 104, 69, 0.15);
+    font-family: Georgia, serif;
     line-height: 1;
+    pointer-events: none;
+    user-select: none;
   }
 
-  .quote-text{
+  .quote-text {
     font-family: 'Dancing Script', cursive;
-    font-size: 0.95rem;
-    color: #4A6845;
-    line-height: 1.6;
+    font-size: 1.05rem;
+    color: #385234;
+    line-height: 1.45;
+    margin: 2px 0;
+    position: relative;
+    z-index: 1;
   }
 
-  .quote-author{
+  .quote-author {
     font-size: 0.65rem;
-    color: #6A8866;
-    margin-top:8px;
+    color: #587953;
+    margin-top: 8px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
 </style>

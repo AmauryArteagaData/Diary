@@ -1,45 +1,58 @@
 ---
 const fecha = new Date();
 
-const mes = fecha.toLocaleString('en-US', { month: 'long' }).toUpperCase();
+const mes = fecha.toLocaleString('en-US', { month: 'short' }).toUpperCase();
 const dia = fecha.getDate();
 const anio = fecha.getFullYear();
 const diaSemana = fecha.toLocaleString('en-US', { weekday: 'long' });
 ---
-<div class="card">
-  <div class="mes">{anio}</div>
+
+<div class="card date-card">
+  <div class="card-label">✦ TODAY</div>
+  <div class="mes-anio">{mes} {anio}</div>
   <div class="dia">{dia}</div>
   <div class="dia-semana">{diaSemana}</div>
 </div>
 
 <style>
-  .card{
+  .card {
     background: var(--warm-brown-dark);
     border-radius: var(--card-radius);
-    padding: 1rem;
+    padding: 14px 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
+    box-shadow: 0 4px 12px rgba(92, 46, 14, 0.08);
   }
 
-  .mes{
+  .card-label {
     font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: #C4956A;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .mes-anio {
+    font-size: 0.7rem;
     letter-spacing: 0.15em;
     color: #C4956A;
+    font-weight: 500;
   }
 
-  .dia{
-    font-size: 3rem;
-    font-weight: 500;
-    color: white;
+  .dia {
+    font-size: 2.75rem;
+    font-weight: 700;
+    color: #FFFFFF;
     line-height: 1;
     margin: 4px 0;
   }
 
-  .dia-semana{
-    font-size: 0.7rem;
+  .dia-semana {
+    font-size: 0.75rem;
     color: #C4956A;
+    font-weight: 500;
   }
 </style>

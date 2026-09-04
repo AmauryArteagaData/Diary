@@ -1,6 +1,189 @@
 ---
 ---
-<article class="card recent-card">
-  <h2>Recent</h2>
-  <p>See your latest entries at a glance.</p>
-</article>
+
+<div class="card recent-card">
+  <div class="card-header">
+    <div class="card-label">✦ RECENT ENTRIES</div>
+    <span class="recent-count" id="recent-count-badge">0 saved</span>
+  </div>
+
+  <div class="recent-list" id="recent-list">
+    <div class="recent-empty">Your saved entries will appear here once you write.</div>
+  </div>
+</div>
+
+<style>
+  .card {
+    background: #EFE6DD;
+    border-radius: var(--card-radius);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(112, 83, 66, 0.08);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .card-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: #705342;
+    font-weight: 700;
+  }
+
+  .recent-count {
+    font-size: 0.65rem;
+    color: #705342;
+    opacity: 0.8;
+    font-weight: 500;
+  }
+
+  .recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .recent-item {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: all 0.15s ease;
+  }
+
+  .recent-item:hover {
+    background: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(112, 83, 66, 0.1);
+  }
+
+  .recent-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .recent-item-date {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #705342;
+  }
+
+  .recent-item-mood {
+    font-size: 0.6rem;
+    color: #8C6D58;
+    background: rgba(112, 83, 66, 0.1);
+    padding: 1px 6px;
+    border-radius: 9999px;
+    font-weight: 500;
+  }
+
+  .recent-item-snippet {
+    font-size: 0.75rem;
+    color: #4A372C;
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .recent-item-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+
+  .recent-tag-mini {
+    font-size: 0.55rem;
+    color: #705342;
+    opacity: 0.85;
+  }
+
+  .recent-empty {
+    font-size: 0.65rem;
+    color: #705342;
+    opacity: 0.8;
+    font-style: italic;
+    padding: 8px 0;
+  }
+</style>
+
+<script>
+  import { getAllEntries, getRecentEntries } from '../utils/diaryStorage.js';
+
+  const recentListEl = document.querySelector<HTMLElement>('#recent-list');
+  const recentBadgeEl = document.querySelector<HTMLElement>('#recent-count-badge');
+
+  function updateRecentUI() {
+    const entries = getAllEntries();
+    const recent = getRecentEntries(entries, 3);
+
+    if (recentBadgeEl) {
+      recentBadgeEl.textContent = `${recent.length} saved`;
+    }
+
+    if (!recentListEl) return;
+
+    if (recent.length === 0) {
+      recentListEl.innerHTML = '<div class="recent-empty">Your saved entries will appear here once you write.</div>';
+      return;
+    }
+
+    recentListEl.innerHTML = '';
+    recent.forEach((entry) => {
+      const item = document.createElement('div');
+      item.className = 'recent-item';
+
+      const header = document.createElement('div');
+      header.className = 'recent-item-header';
+
+      const dateSpan = document.createElement('span');
+      dateSpan.className = 'recent-item-date';
+      dateSpan.textContent = entry.displayDate || entry.fecha;
+
+      const moodSpan = document.createElement('span');
+      moodSpan.className = 'recent-item-mood';
+      moodSpan.textContent = entry.mood || 'Reflection';
+
+      header.appendChild(dateSpan);
+      header.appendChild(moodSpan);
+
+      const snippet = document.createElement('p');
+      snippet.className = 'recent-item-snippet';
+      snippet.textContent = entry.contenido && entry.contenido.trim()
+        ? entry.contenido
+        : '(No written notes)';
+
+      item.appendChild(header);
+      item.appendChild(snippet);
+
+      if (Array.isArray(entry.tags) && entry.tags.length > 0) {
+        const tagsWrap = document.createElement('div');
+        tagsWrap.className = 'recent-item-tags';
+        entry.tags.forEach((tag) => {
+          const tagSpan = document.createElement('span');
+          tagSpan.className = 'recent-tag-mini';
+          tagSpan.textContent = tag;
+          tagsWrap.appendChild(tagSpan);
+        });
+        item.appendChild(tagsWrap);
+      }
+
+      recentListEl.appendChild(item);
+    });
+  }
+
+  updateRecentUI();
+
+  window.addEventListener('diary:entry-updated', () => {
+    updateRecentUI();
+  });
+</script>

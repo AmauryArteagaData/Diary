@@ -1,6 +1,117 @@
 ---
 ---
-<article class="card streak-card">
-  <h2>Streak</h2>
-  <p>Keep the momentum going—your daily streak is alive.</p>
-</article>
+
+<div class="card streak-card">
+  <div class="card-label">✦ STREAK</div>
+  <div class="streak-body">
+    <div class="streak-icon-wrap">
+      <span class="streak-icon">🔥</span>
+    </div>
+    <div class="streak-info">
+      <div class="streak-count" id="streak-count">0</div>
+      <div class="streak-unit">days in a row</div>
+    </div>
+  </div>
+  <p class="streak-message" id="streak-message">Start writing today to build your streak!</p>
+</div>
+
+<style>
+  .card {
+    background: #FDE8C4;
+    border-radius: var(--card-radius);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(156, 101, 27, 0.08);
+  }
+
+  .card-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: #9C651B;
+    font-weight: 700;
+  }
+
+  .streak-body {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0;
+  }
+
+  .streak-icon-wrap {
+    background: rgba(156, 101, 27, 0.12);
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+  }
+
+  .streak-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .streak-count {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #7D4C0C;
+    line-height: 1;
+  }
+
+  .streak-unit {
+    font-size: 0.65rem;
+    color: #9C651B;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-top: 2px;
+  }
+
+  .streak-message {
+    font-size: 0.65rem;
+    color: #9C651B;
+    font-weight: 500;
+    line-height: 1.35;
+    opacity: 0.9;
+  }
+</style>
+
+<script>
+  import { getAllEntries, calculateStreak } from '../utils/diaryStorage.js';
+
+  const streakCountEl = document.querySelector<HTMLElement>('#streak-count');
+  const streakMessageEl = document.querySelector<HTMLElement>('#streak-message');
+
+  function updateStreakUI() {
+    const entries = getAllEntries();
+    const { currentStreak, activeToday } = calculateStreak(entries);
+
+    if (streakCountEl) {
+      streakCountEl.textContent = String(currentStreak);
+    }
+
+    if (streakMessageEl) {
+      if (currentStreak === 0) {
+        streakMessageEl.textContent = 'Write your thoughts today to start your streak!';
+      } else if (activeToday) {
+        streakMessageEl.textContent = currentStreak === 1
+          ? 'Great start! Your streak is active today.'
+          : `Amazing! ${currentStreak} days of mindful reflection.`;
+      } else {
+        streakMessageEl.textContent = 'Keep the momentum going—write an entry today!';
+      }
+    }
+  }
+
+  // Initial calculation
+  updateStreakUI();
+
+  // Recalculate on any diary change event
+  window.addEventListener('diary:entry-updated', () => {
+    updateStreakUI();
+  });
+</script>

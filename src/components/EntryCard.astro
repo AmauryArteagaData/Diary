@@ -5,71 +5,282 @@ const fecha = new Date().toLocaleDateString('en-US', {
   year: 'numeric'
 });
 ---
-<div class="card">
-  <div class="card-label">Today Entry</div>
-  <p class="date">{fecha}</p>
-  <textarea class="entry-box" placeholder="What's on your mind today?"></textarea>
-  <button class="save-btn">Save Entry</button>
+
+<div class="card entry-card">
+  <div class="card-header">
+    <div class="card-label">✦ TODAY'S ENTRY</div>
+    <span class="date">{fecha}</span>
+  </div>
+
+  <textarea class="entry-box" placeholder="What's on your mind today? Write freely..."></textarea>
+
+  <div class="tags-section">
+    <div class="tags-label">Tags:</div>
+    <div class="tags-list" id="tags-list">
+      <!-- Tag chips will be populated/toggled here -->
+    </div>
+    <div class="tag-input-wrapper">
+      <input type="text" class="tag-input" placeholder="+ add tag" />
+    </div>
+  </div>
+
+  <div class="card-footer">
+    <span class="save-status" id="save-status">All changes stored locally</span>
+    <button class="save-btn" id="save-btn">Save Entry</button>
+  </div>
 </div>
 
 <style>
-  .card{
+  .card {
     background: #F9E0D9;
     border-radius: var(--card-radius);
-    padding: 1rem;
+    padding: 1rem 1.25rem;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    box-shadow: 0 4px 12px rgba(166, 92, 74, 0.08);
   }
 
-  .card-label{
-    font-size: 0.7rem;
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-label {
+    font-size: 0.65rem;
     letter-spacing: 0.12em;
     color: #A65C4A;
+    font-weight: 700;
   }
 
-  .date{
+  .date {
     font-size: 0.65rem;
     color: #A65C4A;
+    font-weight: 500;
+    opacity: 0.9;
   }
 
-  entry-box{
-    border: 1px solid #E0B7A4;
-    border-radius: 6px;
-    padding: 0.5rem;
-    min-height: 80px;
-    resize: 0.85rem;
-    color: #333;
+  .entry-box {
+    width: 100%;
+    border: 1px solid #E4B8A6;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    padding: 0.75rem;
+    min-height: 110px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    color: #3D2B1F;
+    resize: vertical;
+    outline: none;
+    transition: all 0.2s ease;
+    line-height: 1.5;
   }
 
-  .save-btn{
+  .entry-box:focus {
+    background: #FFFFFF;
+    border-color: #A65C4A;
+    box-shadow: 0 0 0 2px rgba(166, 92, 74, 0.15);
+  }
+
+  .tags-section {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tags-label {
+    font-size: 0.65rem;
+    color: #A65C4A;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .tag-chip {
+    background: rgba(166, 92, 74, 0.12);
+    color: #A65C4A;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .tag-chip:hover {
+    background: rgba(166, 92, 74, 0.22);
+  }
+
+  .tag-chip .remove-tag {
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .tag-input-wrapper {
+    display: inline-flex;
+  }
+
+  .tag-input {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px dashed #E4B8A6;
+    border-radius: 9999px;
+    padding: 2px 8px;
+    font-size: 0.65rem;
+    color: #3D2B1F;
+    outline: none;
+    width: 80px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+  }
+
+  .tag-input:focus {
+    width: 110px;
+    background: #FFFFFF;
+    border-style: solid;
+    border-color: #A65C4A;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2px;
+  }
+
+  .save-status {
+    font-size: 0.65rem;
+    color: #A65C4A;
+    opacity: 0.8;
+  }
+
+  .save-btn {
     background: #A65C4A;
-    color: white;
+    color: #FFFFFF;
     border: none;
     border-radius: 6px;
-    padding: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(166, 92, 74, 0.25);
   }
 
-  .save-btn:hover{
+  .save-btn:hover {
     background: #8C4E3D;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(166, 92, 74, 0.35);
+  }
+
+  .save-btn:active {
+    transform: translateY(0);
   }
 </style>
 
 <script>
-  //@ts-nocheck
-  const textarea= document.getElementById('entry-box');
-  const saveBtn= document.getElementById('save-btn');
-  const todayKey= entry-$(new Date().toLocaleDateString('en-US'));
+  import { getTodayEntry, saveTodayEntry } from '../utils/diaryStorage.js';
 
-  const saved= localStorage.getItem(todayKey);
-  if (saved){
-    textarea.value = saved;
+  const textarea = document.querySelector<HTMLTextAreaElement>('.entry-box');
+  const saveBtn = document.querySelector<HTMLButtonElement>('#save-btn');
+  const saveStatus = document.querySelector<HTMLElement>('#save-status');
+  const tagsListEl = document.querySelector<HTMLElement>('#tags-list');
+  const tagInput = document.querySelector<HTMLInputElement>('.tag-input');
+
+  let currentTags: string[] = [];
+
+  function renderTags() {
+    if (!tagsListEl) return;
+    tagsListEl.innerHTML = '';
+    currentTags.forEach((tag, index) => {
+      const chip = document.createElement('span');
+      chip.className = 'tag-chip';
+      chip.innerHTML = `${tag} <span class="remove-tag" data-index="${index}">&times;</span>`;
+      tagsListEl.appendChild(chip);
+    });
+
+    tagsListEl.querySelectorAll('.remove-tag').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement | null;
+        if (target && target.dataset.index !== undefined) {
+          const idx = Number(target.dataset.index);
+          currentTags.splice(idx, 1);
+          renderTags();
+          saveTodayEntry({ tags: currentTags });
+        }
+      });
+    });
   }
 
+  function addTag(tagText: string) {
+    let clean = tagText.trim();
+    if (!clean) return;
+    if (!clean.startsWith('#')) clean = `#${clean}`;
+    if (!currentTags.includes(clean)) {
+      currentTags.push(clean);
+      renderTags();
+      saveTodayEntry({ tags: currentTags });
+    }
+    if (tagInput) tagInput.value = '';
+  }
+
+  tagInput?.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      if (tagInput) addTag(tagInput.value);
+    }
+  });
+
+  tagInput?.addEventListener('blur', () => {
+    if (tagInput && tagInput.value.trim()) {
+      addTag(tagInput.value);
+    }
+  });
+
+  // Load existing entry
+  const todayEntry = getTodayEntry();
+  if (textarea && todayEntry.contenido) {
+    textarea.value = todayEntry.contenido;
+  }
+  if (Array.isArray(todayEntry.tags)) {
+    currentTags = [...todayEntry.tags];
+    renderTags();
+  }
+
+  // Save handler
   saveBtn?.addEventListener('click', () => {
-    localStorage.setItem(todayKey, textarea.value);
-    alert('Entry saved');
+    const content = textarea ? textarea.value : '';
+    saveTodayEntry({
+      contenido: content,
+      tags: currentTags
+    });
+
+    if (saveStatus) {
+      saveStatus.textContent = 'Saved just now!';
+      setTimeout(() => {
+        if (saveStatus) saveStatus.textContent = 'All changes stored locally';
+      }, 3000);
+    }
+  });
+
+  // Listen to remote changes or mood updates
+  window.addEventListener('diary:entry-updated', (event: Event) => {
+    const customEvt = event as CustomEvent;
+    const updated = customEvt.detail;
+    if (updated && Array.isArray(updated.tags)) {
+      currentTags = updated.tags;
+      renderTags();
+    }
   });
 </script>

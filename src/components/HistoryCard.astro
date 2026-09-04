@@ -1,0 +1,418 @@
+---
+---
+
+<div class="card history-card">
+  <div class="card-header">
+    <div class="header-left">
+      <div class="card-label">✦ JOURNAL HISTORY</div>
+      <span class="history-badge" id="history-total-badge">Showing last 10</span>
+    </div>
+    <div class="header-actions">
+      <div class="search-wrap">
+        <input type="text" class="history-search" id="history-search" placeholder="Search memories or #tags..." />
+      </div>
+      <button type="button" class="seed-btn" id="seed-btn" title="Load 10 realistic entries for previous days">✦ Load 10 Samples</button>
+      <button type="button" class="toggle-all-btn" id="toggle-all-btn">Show all</button>
+    </div>
+  </div>
+
+  <div class="history-timeline" id="history-timeline">
+    <div class="history-empty" id="history-empty">
+      No journal entries recorded yet. Click "✦ Load 10 Samples" or write your thoughts above to build your personal archive!
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    background: #E6D8DB;
+    border-radius: var(--card-radius);
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-shadow: 0 4px 12px rgba(128, 78, 92, 0.08);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: #804E5C;
+    font-weight: 700;
+  }
+
+  .history-badge {
+    font-size: 0.65rem;
+    color: #804E5C;
+    background: rgba(128, 78, 92, 0.12);
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-weight: 600;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .search-wrap {
+    display: flex;
+    align-items: center;
+  }
+
+  .history-search {
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid #D6BFC5;
+    border-radius: 9999px;
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    color: #3D2B1F;
+    outline: none;
+    width: 170px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+  }
+
+  .history-search:focus {
+    width: 210px;
+    background: #FFFFFF;
+    border-color: #804E5C;
+    box-shadow: 0 0 0 2px rgba(128, 78, 92, 0.15);
+  }
+
+  .seed-btn {
+    background: #804E5C;
+    border: none;
+    color: #FFFFFF;
+    border-radius: 9999px;
+    padding: 3px 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .seed-btn:hover {
+    background: #653A47;
+    transform: translateY(-1px);
+  }
+
+  .toggle-all-btn {
+    background: rgba(128, 78, 92, 0.12);
+    border: 1px solid rgba(128, 78, 92, 0.2);
+    color: #804E5C;
+    border-radius: 9999px;
+    padding: 3px 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .toggle-all-btn:hover {
+    background: #804E5C;
+    color: #FFFFFF;
+  }
+
+  .history-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  :global(.history-entry-item) {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(128, 78, 92, 0.1);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  :global(.history-entry-item:hover) {
+    background: #FFFFFF;
+    box-shadow: 0 3px 8px rgba(128, 78, 92, 0.1);
+    transform: translateY(-1px);
+  }
+
+  :global(.history-item-top) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  :global(.history-item-date) {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #804E5C;
+  }
+
+  :global(.history-item-meta) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  :global(.history-mood-badge) {
+    font-size: 0.65rem;
+    color: #804E5C;
+    background: rgba(128, 78, 92, 0.1);
+    padding: 2px 7px;
+    border-radius: 9999px;
+    font-weight: 500;
+  }
+
+  :global(.history-delete-btn) {
+    background: transparent;
+    border: none;
+    color: #804E5C;
+    font-size: 0.85rem;
+    cursor: pointer;
+    opacity: 0.5;
+    padding: 0 4px;
+    line-height: 1;
+    transition: opacity 0.15s ease;
+  }
+
+  :global(.history-delete-btn:hover) {
+    opacity: 1;
+    color: #A63D40;
+  }
+
+  :global(.history-item-content) {
+    font-size: 0.8rem;
+    color: #3D2B1F;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  :global(.history-item-content.collapsed) {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  :global(.history-item-tags) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 2px;
+  }
+
+  :global(.history-tag-chip) {
+    background: rgba(128, 78, 92, 0.1);
+    color: #804E5C;
+    font-size: 0.6rem;
+    padding: 1px 6px;
+    border-radius: 9999px;
+    font-weight: 500;
+  }
+
+  .history-empty {
+    font-size: 0.7rem;
+    color: #804E5C;
+    opacity: 0.8;
+    font-style: italic;
+    text-align: center;
+    padding: 1.5rem 1rem;
+  }
+
+  @media (max-width: 600px) {
+    .card-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .header-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+    .search-wrap {
+      flex-grow: 1;
+    }
+    .history-search {
+      width: 100%;
+    }
+    .history-search:focus {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import { getAllEntries, deleteEntry, seedSampleEntries } from '../utils/diaryStorage.js';
+
+  const timelineEl = document.querySelector<HTMLElement>('#history-timeline');
+  const badgeEl = document.querySelector<HTMLElement>('#history-total-badge');
+  const searchInput = document.querySelector<HTMLInputElement>('#history-search');
+  const toggleAllBtn = document.querySelector<HTMLButtonElement>('#toggle-all-btn');
+  const seedBtn = document.querySelector<HTMLButtonElement>('#seed-btn');
+
+  const DEFAULT_LIMIT = 10;
+  let showAll = false;
+  let searchQuery = '';
+
+  function renderHistory() {
+    const allEntries = getAllEntries();
+    const query = searchQuery.toLowerCase().trim();
+
+    const filtered = allEntries.filter(entry => {
+      if (!query) return true;
+      const matchContent = (entry.contenido || '').toLowerCase().includes(query);
+      const matchDate = (entry.displayDate || entry.fecha || '').toLowerCase().includes(query);
+      const matchMood = (entry.mood || '').toLowerCase().includes(query);
+      const matchTags = Array.isArray(entry.tags) && entry.tags.some(t => t.toLowerCase().includes(query));
+      return matchContent || matchDate || matchMood || matchTags;
+    });
+
+    const totalCount = filtered.length;
+    const entriesToRender = (showAll || query) ? filtered : filtered.slice(0, DEFAULT_LIMIT);
+
+    if (badgeEl) {
+      if (query) {
+        badgeEl.textContent = `${totalCount} match${totalCount === 1 ? '' : 'es'}`;
+      } else if (totalCount <= DEFAULT_LIMIT) {
+        badgeEl.textContent = `${totalCount} ${totalCount === 1 ? 'entry' : 'entries'}`;
+      } else if (showAll) {
+        badgeEl.textContent = `All ${totalCount} entries`;
+      } else {
+        badgeEl.textContent = `Last ${DEFAULT_LIMIT} of ${totalCount} entries`;
+      }
+    }
+
+    if (toggleAllBtn) {
+      if (totalCount > DEFAULT_LIMIT && !query) {
+        toggleAllBtn.style.display = 'inline-block';
+        toggleAllBtn.textContent = showAll ? `Show last ${DEFAULT_LIMIT}` : `Show all (${totalCount})`;
+      } else {
+        toggleAllBtn.style.display = 'none';
+      }
+    }
+
+    if (!timelineEl) return;
+
+    if (entriesToRender.length === 0) {
+      timelineEl.innerHTML = `
+        <div class="history-empty">
+          ${query ? 'No entries match your search query.' : 'No journal entries recorded yet. Write your thoughts above to build your personal archive!'}
+        </div>
+      `;
+      return;
+    }
+
+    timelineEl.innerHTML = '';
+
+    entriesToRender.forEach((entry) => {
+      const item = document.createElement('div');
+      item.className = 'history-entry-item';
+
+      // Header row
+      const topRow = document.createElement('div');
+      topRow.className = 'history-item-top';
+
+      const dateEl = document.createElement('span');
+      dateEl.className = 'history-item-date';
+      dateEl.textContent = entry.displayDate || entry.fecha;
+
+      const metaEl = document.createElement('div');
+      metaEl.className = 'history-item-meta';
+
+      if (entry.mood) {
+        const moodBadge = document.createElement('span');
+        moodBadge.className = 'history-mood-badge';
+        moodBadge.textContent = entry.mood;
+        metaEl.appendChild(moodBadge);
+      }
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'history-delete-btn';
+      deleteBtn.title = 'Delete this entry';
+      deleteBtn.innerHTML = '&times;';
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm(`Delete entry for ${entry.displayDate || entry.fecha}?`)) {
+          deleteEntry(entry.fecha);
+        }
+      });
+      metaEl.appendChild(deleteBtn);
+
+      topRow.appendChild(dateEl);
+      topRow.appendChild(metaEl);
+      item.appendChild(topRow);
+
+      // Content paragraph
+      const contentEl = document.createElement('p');
+      contentEl.className = 'history-item-content collapsed';
+      contentEl.textContent = entry.contenido && entry.contenido.trim()
+        ? entry.contenido
+        : '(No written notes for this entry)';
+      item.appendChild(contentEl);
+
+      // Click to toggle expand/collapse
+      item.addEventListener('click', () => {
+        contentEl.classList.toggle('collapsed');
+      });
+
+      // Tags
+      if (Array.isArray(entry.tags) && entry.tags.length > 0) {
+        const tagsContainer = document.createElement('div');
+        tagsContainer.className = 'history-item-tags';
+        entry.tags.forEach(tag => {
+          const tagSpan = document.createElement('span');
+          tagSpan.className = 'history-tag-chip';
+          tagSpan.textContent = tag;
+          tagsContainer.appendChild(tagSpan);
+        });
+        item.appendChild(tagsContainer);
+      }
+
+      timelineEl.appendChild(item);
+    });
+  }
+
+  searchInput?.addEventListener('input', () => {
+    searchQuery = searchInput.value;
+    renderHistory();
+  });
+
+  toggleAllBtn?.addEventListener('click', () => {
+    showAll = !showAll;
+    renderHistory();
+  });
+
+  seedBtn?.addEventListener('click', () => {
+    seedSampleEntries(true);
+    renderHistory();
+  });
+
+  renderHistory();
+
+  window.addEventListener('diary:entry-updated', () => {
+    renderHistory();
+  });
+</script>

@@ -6,64 +6,137 @@ const moods = [
   { emoji: '😄', label: 'Feeling great' },
 ];
 ---
-<div class="card">
+
+<div class="card mood-card">
   <div class="card-label">✦ MOOD</div>
   <div class="emojis">
     {moods.map((mood, i) => (
-      <span
-        class={`emoji ${i === 2 ? 'active' : ''}`}
+      <button
+        type="button"
+        class={`emoji-btn ${i === 2 ? 'active' : ''}`}
         data-label={mood.label}
+        data-emoji={mood.emoji}
         data-index={i}
+        aria-label={mood.label}
       >
-        {mood.emoji}
-      </span>
+        <span class="emoji-icon">{mood.emoji}</span>
+      </button>
     ))}
   </div>
   <div class="mood-label" id="mood-label">Feeling alright</div>
 </div>
 
-<script>
-  //@ts-nocheck
-  const emojis = document.querySelectorAll('.emoji');
-  const label = document.getElementById('mood-label');
-
-  emojis.forEach((emoji) => {
-    emoji.addEventListener('click', () => {
-      emojis.forEach(e => e.classList.remove('active'));
-      emoji.classList.add('active');
-      label.textContent = (emoji as HTMLElement).dataset.label;
-    });
-  });
-</script>
-
 <style>
-  .card{
+  .card {
     background: #D4CAEE;
     border-radius: var(--card-radius);
     padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(136, 115, 184, 0.08);
   }
 
-  .card-label{
-    font-size: 0.6rem;
+  .card-label {
+    font-size: 0.65rem;
     letter-spacing: 0.12em;
     color: #8873B8;
-    margin-bottom: 10px;
+    font-weight: 700;
+    margin-bottom: 8px;
   }
 
-  .emojis{
-    display:flex;
-    gap: 6px;
-    align-items:center;
+  .emojis {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    margin: 4px 0;
   }
 
-  .emojis-active{
-    opacity: 1;
+  .emoji-btn {
+    background: rgba(255, 255, 255, 0.4);
+    border: 2px solid transparent;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .mod-label{
+  .emoji-btn:hover {
+    background: rgba(255, 255, 255, 0.85);
+    transform: scale(1.12);
+  }
+
+  .emoji-btn.active {
+    background: #FFFFFF;
+    border-color: #8873B8;
+    box-shadow: 0 4px 10px rgba(136, 115, 184, 0.3);
+    transform: scale(1.15);
+  }
+
+  .emoji-icon {
+    line-height: 1;
+  }
+
+  .mood-label {
     font-size: 0.65rem;
     color: #8873B8;
+    font-weight: 600;
     margin-top: 8px;
     text-align: center;
+    letter-spacing: 0.02em;
   }
 </style>
+
+<script>
+  import { getTodayEntry, saveTodayEntry } from '../utils/diaryStorage.js';
+
+  const emojiButtons = document.querySelectorAll<HTMLButtonElement>('.emoji-btn');
+  const label = document.querySelector<HTMLElement>('#mood-label');
+
+  // Load persisted mood from today's entry
+  const todayEntry = getTodayEntry();
+  if (todayEntry.mood) {
+    emojiButtons.forEach((btn) => {
+      if (btn.dataset.label === todayEntry.mood) {
+        emojiButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (label) label.textContent = todayEntry.mood;
+      }
+    });
+  }
+
+  // Handle user mood selection
+  emojiButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      emojiButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const selectedMood = btn.dataset.label || 'Feeling alright';
+      if (label) label.textContent = selectedMood;
+
+      // Persist directly into the unified entry object
+      saveTodayEntry({ mood: selectedMood });
+    });
+  });
+
+  // Listen to external updates if needed
+  window.addEventListener('diary:entry-updated', (event: Event) => {
+    const customEvt = event as CustomEvent;
+    const updated = customEvt.detail;
+    if (updated && updated.mood && label && label.textContent !== updated.mood) {
+      label.textContent = updated.mood;
+      emojiButtons.forEach(b => {
+        if (b.dataset.label === updated.mood) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+    }
+  });
+</script>
