@@ -1,10 +1,158 @@
----
-const fecha = new Date().toLocaleDateString('en-US', {
-  month: 'long',
-  day: 'numeric',
-  year: 'numeric'
-});
----
-<div class="card">
-  <div class="card-label">Today Entry</div>
-</div>
+<script>
+  import { getTodayEntry, saveTodayEntry } from '../utils/diaryStorage.js';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const textarea = document.querySelector<HTMLTextAreaElement>('#entry-textarea');
+    const saveStatus = document.querySelector<HTMLElement>('#save-status');
+    const statusText = document.querySelector<HTMLElement>('#status-text');
+    const statsEl = document.querySelector<HTMLElement>('#entry-stats');
+    const saveBtn = document.querySelector<HTMLButtonElement>('#save-btn');
+    const clearBtn = document.querySelector<HTMLButtonElement>('#clear-btn');
+    const tagsContainer = document.querySelector<HTMLElement>('#active-tags-container');
+    const tagInput = document.querySelector<HTMLInputElement>('#new-tag-input');
+    const addTagBtn = document.querySelector<HTMLButtonElement>('#add-tag-btn');
+    const suggestionBtns = document.querySelectorAll<HTMLButtonElement>('.tag-suggestion-btn');
+
+    let activeTags: string[] = [];
+    let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    function updateStats(text: string) {
+      if (!statsEl) return;
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      const chars = text.length;
+      statsEl.innerHTML = `${words} word${words === 1 ? '' : 's'} &bull; ${chars} char${chars === 1 ? '' : 's'}`;
+    }
+
+    function setStatus(status: 'saved' | 'saving' | 'unsaved') {
+      if (!saveStatus || !statusText) return;
+      saveStatus.classList.remove('saved', 'saving', 'unsaved');
+      saveStatus.classList.add(status);
+      if (status === 'saved') {
+        statusText.textContent = 'Saved';
+      } else if (status === 'saving') {
+        statusText.textContent = 'Saving...';
+      } else {
+        statusText.textContent = 'Unsaved changes';
+      }
+    }
+
+    function renderTags() {
+      if (!tagsContainer) return;
+      tagsContainer.innerHTML = '';
+      activeTags.forEach((tag, index) => {
+        const chip = document.createElement('span');
+        chip.className = 'entry-tag-chip';
+        chip.innerHTML = `${tag} <span class="entry-tag-remove" data-index="${index}">&times;</span>`;
+        tagsContainer.appendChild(chip);
+      });
+
+      tagsContainer.querySelectorAll('.entry-tag-remove').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt((e.target as HTMLElement).dataset.index || '0', 10);
+          activeTags.splice(idx, 1);
+          renderTags();
+          persistEntry();
+        });
+      });
+    }
+
+    function addTag(tagText: string) {
+      let clean = tagText.trim();
+      if (!clean) return;
+      if (!clean.startsWith('#')) clean = `#${clean}`;
+      if (!activeTags.includes(clean)) {
+        activeTags.push(clean);
+        renderTags();
+        persistEntry();
+      }
+      if (tagInput) tagInput.value = '';
+    }
+
+    function persistEntry() {
+      setStatus('saving');
+      const content = textarea ? textarea.value : '';
+      saveTodayEntry({
+        contenido: content,
+        tags: [...activeTags]
+      });
+      setTimeout(() => {
+        setStatus('saved');
+      }, 300);
+    }
+
+    function loadTodayData() {
+      const entry = getTodayEntry() || { contenido: '', tags: [] };
+      if (textarea) {
+        textarea.value = entry.contenido || '';
+        updateStats(textarea.value);
+      }
+      activeTags = Array.isArray(entry.tags) ? [...entry.tags] : [];
+      renderTags();
+      setStatus('saved');
+    }
+
+    // Inicializar listeners y datos
+    loadTodayData();
+
+    textarea?.addEventListener('input', () => {
+      setStatus('unsaved');
+      const content = textarea.value;
+      updateStats(content);
+
+      if (debounceTimeout) clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        persistEntry();
+      }, 600);
+    });
+
+    saveBtn?.addEventListener('click', () => {
+      if (debounceTimeout) clearTimeout(debounceTimeout);
+      persistEntry();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        persistEntry();
+      }
+    });
+
+    clearBtn?.addEventListener('click', () => {
+      if (!textarea) return;
+      if (textarea.value.trim().length > 0) {
+        if (confirm('Are you sure you want to clear today\'s written entry?')) {
+          textarea.value = '';
+          activeTags = [];
+          renderTags();
+          updateStats('');
+          persistEntry();
+        }
+      }
+    });
+
+    addTagBtn?.addEventListener('click', () => {
+      if (tagInput) addTag(tagInput.value);
+    });
+
+    tagInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addTag(tagInput.value);
+      }
+    });
+
+    suggestionBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tag = btn.dataset.tag;
+        if (tag) addTag(tag);
+      });
+    });
+
+    window.addEventListener('diary:entry-updated', (e: Event) => {
+      const customEvt = e as CustomEvent;
+      if (customEvt.detail?.seeded) {
+        loadTodayData();
+      }
+    });
+  });
+</script>

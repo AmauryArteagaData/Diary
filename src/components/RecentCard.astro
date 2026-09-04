@@ -1,6 +1,193 @@
 ---
 ---
-<article class="card recent-card">
-  <h2>Recent</h2>
-  <p>See your latest entries at a glance.</p>
-</article>
+
+<div class="card recent-card">
+  <div class="card-header">
+    <div class="card-label">✦ RECENT MOMENTS</div>
+    <span class="recent-badge" id="recent-badge">Latest highlights</span>
+  </div>
+
+  <div class="recent-list" id="recent-list">
+    <div class="recent-empty">No recent reflections yet. Write your thoughts above!</div>
+  </div>
+</div>
+
+<style>
+  .card {
+    background: #EBE2D5;
+    border-radius: var(--card-radius);
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-shadow: 0 4px 12px rgba(109, 85, 66, 0.08);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: #6D5542;
+    font-weight: 700;
+  }
+
+  .recent-badge {
+    font-size: 0.65rem;
+    color: #6D5542;
+    background: rgba(109, 85, 66, 0.1);
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-weight: 600;
+  }
+
+  .recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  :global(.recent-item) {
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(109, 85, 66, 0.12);
+    border-radius: 9px;
+    padding: 9px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: all 0.15s ease;
+  }
+
+  :global(.recent-item:hover) {
+    background: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(109, 85, 66, 0.08);
+  }
+
+  :global(.recent-top) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  :global(.recent-date) {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #6D5542;
+  }
+
+  :global(.recent-mood) {
+    font-size: 0.62rem;
+    color: #6D5542;
+    background: rgba(109, 85, 66, 0.1);
+    padding: 1px 6px;
+    border-radius: 9999px;
+    font-weight: 500;
+  }
+
+  :global(.recent-snippet) {
+    font-size: 0.78rem;
+    color: #3D2B1F;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  :global(.recent-tags) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 2px;
+  }
+
+  :global(.recent-tag) {
+    background: rgba(109, 85, 66, 0.08);
+    color: #6D5542;
+    font-size: 0.58rem;
+    padding: 1px 5px;
+    border-radius: 9999px;
+    font-weight: 500;
+  }
+
+  .recent-empty {
+    font-size: 0.7rem;
+    color: #6D5542;
+    opacity: 0.8;
+    font-style: italic;
+    text-align: center;
+    padding: 1rem 0;
+  }
+</style>
+
+<script>
+  import { getAllEntries, getRecentEntries } from '../utils/diaryStorage.js';
+
+  const listEl = document.querySelector<HTMLElement>('#recent-list');
+
+  function renderRecent() {
+    if (!listEl) return;
+    const entries = getAllEntries();
+    const recents = getRecentEntries(entries, 3);
+
+    if (recents.length === 0) {
+      listEl.innerHTML = '<div class="recent-empty">No recent reflections yet. Write your thoughts above!</div>';
+      return;
+    }
+
+    listEl.innerHTML = '';
+    recents.forEach(entry => {
+      const item = document.createElement('div');
+      item.className = 'recent-item';
+
+      const top = document.createElement('div');
+      top.className = 'recent-top';
+
+      const date = document.createElement('span');
+      date.className = 'recent-date';
+      date.textContent = entry.displayDate || entry.fecha;
+
+      top.appendChild(date);
+
+      if (entry.mood) {
+        const mood = document.createElement('span');
+        mood.className = 'recent-mood';
+        mood.textContent = entry.mood;
+        top.appendChild(mood);
+      }
+
+      item.appendChild(top);
+
+      if (entry.contenido) {
+        const snippet = document.createElement('p');
+        snippet.className = 'recent-snippet';
+        snippet.textContent = entry.contenido;
+        item.appendChild(snippet);
+      }
+
+      if (Array.isArray(entry.tags) && entry.tags.length > 0) {
+        const tags = document.createElement('div');
+        tags.className = 'recent-tags';
+        entry.tags.forEach(t => {
+          const chip = document.createElement('span');
+          chip.className = 'recent-tag';
+          chip.textContent = t;
+          tags.appendChild(chip);
+        });
+        item.appendChild(tags);
+      }
+
+      listEl.appendChild(item);
+    });
+  }
+
+  renderRecent();
+
+  window.addEventListener('diary:entry-updated', () => {
+    renderRecent();
+  });
+</script>
