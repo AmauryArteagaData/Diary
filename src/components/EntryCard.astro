@@ -1,158 +1,507 @@
+---
+// EntryCard.astro - Warm Bento Journal Entry Card
+---
+
+<div class="card entry-card">
+  <div class="card-header">
+    <div class="card-label">✦ TODAY'S REFLECTION</div>
+    <div class="save-status saved" id="save-status">
+      <span class="status-dot"></span>
+      <span class="status-text" id="status-text">Saved</span>
+    </div>
+  </div>
+
+  <div class="textarea-wrap">
+    <textarea
+      id="entry-textarea"
+      class="entry-textarea"
+      placeholder="What's on your mind today? Express your thoughts, feelings, and memories freely..."
+      rows="5"
+    ></textarea>
+  </div>
+
+  <div class="card-meta-row">
+    <div class="entry-stats" id="entry-stats">0 words &bull; 0 chars</div>
+    <div class="entry-actions">
+      <button type="button" class="btn-clear" id="clear-btn" title="Clear today's text">Clear</button>
+      <button type="button" class="btn-save" id="save-btn" title="Save changes (Ctrl+S / ⌘+S)">Save</button>
+    </div>
+  </div>
+
+  <div class="tags-section">
+    <div class="tags-header">
+      <span class="tags-title">TAGS & TOPICS</span>
+    </div>
+
+    <div class="active-tags-container" id="active-tags-container"></div>
+
+    <div class="tag-input-row">
+      <div class="tag-input-wrapper">
+        <span class="tag-hash">#</span>
+        <input
+          type="text"
+          id="new-tag-input"
+          class="new-tag-input"
+          placeholder="Add custom tag (e.g. gratitude)"
+        />
+      </div>
+      <button type="button" class="btn-add-tag" id="add-tag-btn">Add</button>
+    </div>
+
+    <div class="tag-suggestions">
+      <span class="suggestions-label">Suggestions:</span>
+      <button type="button" class="tag-suggestion-btn" data-tag="#gratitude">+ #gratitude</button>
+      <button type="button" class="tag-suggestion-btn" data-tag="#mindfulness">+ #mindfulness</button>
+      <button type="button" class="tag-suggestion-btn" data-tag="#focus">+ #focus</button>
+      <button type="button" class="tag-suggestion-btn" data-tag="#growth">+ #growth</button>
+      <button type="button" class="tag-suggestion-btn" data-tag="#wellness">+ #wellness</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    background: #F9E0D9;
+    border-radius: var(--card-radius);
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-shadow: 0 4px 12px rgba(166, 92, 74, 0.08);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: #A65C4A;
+    font-weight: 700;
+  }
+
+  .save-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #A65C4A;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: rgba(166, 92, 74, 0.08);
+    transition: all 0.2s ease;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #A65C4A;
+    transition: background-color 0.2s ease;
+  }
+
+  .save-status.saved .status-dot {
+    background: #4A855A;
+  }
+
+  .save-status.saving .status-dot {
+    background: #C4956A;
+    animation: pulse-dot 1s infinite;
+  }
+
+  .save-status.unsaved .status-dot {
+    background: #D97706;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.6; }
+  }
+
+  .textarea-wrap {
+    width: 100%;
+  }
+
+  .entry-textarea {
+    width: 100%;
+    min-height: 120px;
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(166, 92, 74, 0.2);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    color: #3D2B1F;
+    line-height: 1.5;
+    resize: vertical;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .entry-textarea:focus {
+    background: #FFFFFF;
+    border-color: #A65C4A;
+    box-shadow: 0 0 0 2px rgba(166, 92, 74, 0.15);
+  }
+
+  .entry-textarea::placeholder {
+    color: rgba(166, 92, 74, 0.55);
+    font-style: italic;
+  }
+
+  .card-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .entry-stats {
+    font-size: 0.65rem;
+    color: #A65C4A;
+    font-weight: 500;
+  }
+
+  .entry-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .btn-clear {
+    background: rgba(166, 92, 74, 0.1);
+    border: 1px solid rgba(166, 92, 74, 0.2);
+    color: #A65C4A;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-clear:hover {
+    background: rgba(166, 92, 74, 0.2);
+  }
+
+  .btn-save {
+    background: #A65C4A;
+    border: none;
+    color: #FFFFFF;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-save:hover {
+    background: #8A4637;
+    transform: translateY(-1px);
+  }
+
+  .tags-section {
+    border-top: 1px dashed rgba(166, 92, 74, 0.25);
+    padding-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .tags-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .tags-title {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: #A65C4A;
+    font-weight: 700;
+  }
+
+  .active-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-height: 22px;
+  }
+
+  :global(.entry-tag-chip) {
+    background: #FFFFFF;
+    border: 1px solid rgba(166, 92, 74, 0.25);
+    color: #8A4637;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 1px 3px rgba(166, 92, 74, 0.08);
+  }
+
+  :global(.entry-tag-remove) {
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1;
+    color: #A65C4A;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+  }
+
+  :global(.entry-tag-remove:hover) {
+    opacity: 1;
+    color: #C0392B;
+  }
+
+  .tag-input-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .tag-input-wrapper {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .tag-hash {
+    position: absolute;
+    left: 10px;
+    color: #A65C4A;
+    font-size: 0.75rem;
+    font-weight: 700;
+    pointer-events: none;
+  }
+
+  .new-tag-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(166, 92, 74, 0.2);
+    border-radius: 9999px;
+    padding: 4px 10px 4px 22px;
+    font-size: 0.7rem;
+    color: #3D2B1F;
+    outline: none;
+    font-family: inherit;
+    transition: all 0.2s ease;
+  }
+
+  .new-tag-input:focus {
+    background: #FFFFFF;
+    border-color: #A65C4A;
+    box-shadow: 0 0 0 2px rgba(166, 92, 74, 0.15);
+  }
+
+  .btn-add-tag {
+    background: rgba(166, 92, 74, 0.15);
+    border: 1px solid rgba(166, 92, 74, 0.25);
+    color: #8A4637;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-add-tag:hover {
+    background: #A65C4A;
+    color: #FFFFFF;
+  }
+
+  .tag-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .suggestions-label {
+    font-size: 0.6rem;
+    color: #A65C4A;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+
+  .tag-suggestion-btn {
+    background: transparent;
+    border: 1px dashed rgba(166, 92, 74, 0.3);
+    color: #8A4637;
+    font-size: 0.6rem;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .tag-suggestion-btn:hover {
+    background: rgba(166, 92, 74, 0.15);
+    border-color: #A65C4A;
+  }
+</style>
+
 <script>
   import { getTodayEntry, saveTodayEntry } from '../utils/diaryStorage.js';
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const textarea = document.querySelector<HTMLTextAreaElement>('#entry-textarea');
-    const saveStatus = document.querySelector<HTMLElement>('#save-status');
-    const statusText = document.querySelector<HTMLElement>('#status-text');
-    const statsEl = document.querySelector<HTMLElement>('#entry-stats');
-    const saveBtn = document.querySelector<HTMLButtonElement>('#save-btn');
-    const clearBtn = document.querySelector<HTMLButtonElement>('#clear-btn');
-    const tagsContainer = document.querySelector<HTMLElement>('#active-tags-container');
-    const tagInput = document.querySelector<HTMLInputElement>('#new-tag-input');
-    const addTagBtn = document.querySelector<HTMLButtonElement>('#add-tag-btn');
-    const suggestionBtns = document.querySelectorAll<HTMLButtonElement>('.tag-suggestion-btn');
+  const textarea = document.querySelector<HTMLTextAreaElement>('#entry-textarea');
+  const saveStatus = document.querySelector<HTMLElement>('#save-status');
+  const statusText = document.querySelector<HTMLElement>('#status-text');
+  const statsEl = document.querySelector<HTMLElement>('#entry-stats');
+  const saveBtn = document.querySelector<HTMLButtonElement>('#save-btn');
+  const clearBtn = document.querySelector<HTMLButtonElement>('#clear-btn');
+  const tagsContainer = document.querySelector<HTMLElement>('#active-tags-container');
+  const tagInput = document.querySelector<HTMLInputElement>('#new-tag-input');
+  const addTagBtn = document.querySelector<HTMLButtonElement>('#add-tag-btn');
+  const suggestionBtns = document.querySelectorAll<HTMLButtonElement>('.tag-suggestion-btn');
 
-    let activeTags: string[] = [];
-    let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+  let activeTags: string[] = [];
+  let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    function updateStats(text: string) {
-      if (!statsEl) return;
-      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-      const chars = text.length;
-      statsEl.innerHTML = `${words} word${words === 1 ? '' : 's'} &bull; ${chars} char${chars === 1 ? '' : 's'}`;
+  function updateStats(text: string) {
+    if (!statsEl) return;
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const chars = text.length;
+    statsEl.innerHTML = `${words} word${words === 1 ? '' : 's'} &bull; ${chars} char${chars === 1 ? '' : 's'}`;
+  }
+
+  function setStatus(status: 'saved' | 'saving' | 'unsaved') {
+    if (!saveStatus || !statusText) return;
+    saveStatus.classList.remove('saved', 'saving', 'unsaved');
+    saveStatus.classList.add(status);
+    if (status === 'saved') {
+      statusText.textContent = 'Saved';
+    } else if (status === 'saving') {
+      statusText.textContent = 'Saving...';
+    } else {
+      statusText.textContent = 'Unsaved changes';
     }
+  }
 
-    function setStatus(status: 'saved' | 'saving' | 'unsaved') {
-      if (!saveStatus || !statusText) return;
-      saveStatus.classList.remove('saved', 'saving', 'unsaved');
-      saveStatus.classList.add(status);
-      if (status === 'saved') {
-        statusText.textContent = 'Saved';
-      } else if (status === 'saving') {
-        statusText.textContent = 'Saving...';
-      } else {
-        statusText.textContent = 'Unsaved changes';
-      }
-    }
+  function renderTags() {
+    if (!tagsContainer) return;
+    tagsContainer.innerHTML = '';
+    activeTags.forEach((tag, index) => {
+      const chip = document.createElement('span');
+      chip.className = 'entry-tag-chip';
+      chip.innerHTML = `${tag} <span class="entry-tag-remove" data-index="${index}">&times;</span>`;
+      tagsContainer.appendChild(chip);
+    });
 
-    function renderTags() {
-      if (!tagsContainer) return;
-      tagsContainer.innerHTML = '';
-      activeTags.forEach((tag, index) => {
-        const chip = document.createElement('span');
-        chip.className = 'entry-tag-chip';
-        chip.innerHTML = `${tag} <span class="entry-tag-remove" data-index="${index}">&times;</span>`;
-        tagsContainer.appendChild(chip);
-      });
-
-      tagsContainer.querySelectorAll('.entry-tag-remove').forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-          const idx = parseInt((e.target as HTMLElement).dataset.index || '0', 10);
-          activeTags.splice(idx, 1);
-          renderTags();
-          persistEntry();
-        });
-      });
-    }
-
-    function addTag(tagText: string) {
-      let clean = tagText.trim();
-      if (!clean) return;
-      if (!clean.startsWith('#')) clean = `#${clean}`;
-      if (!activeTags.includes(clean)) {
-        activeTags.push(clean);
+    tagsContainer.querySelectorAll('.entry-tag-remove').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt((e.target as HTMLElement).dataset.index || '0', 10);
+        activeTags.splice(idx, 1);
         renderTags();
         persistEntry();
-      }
-      if (tagInput) tagInput.value = '';
-    }
-
-    function persistEntry() {
-      setStatus('saving');
-      const content = textarea ? textarea.value : '';
-      saveTodayEntry({
-        contenido: content,
-        tags: [...activeTags]
       });
-      setTimeout(() => {
-        setStatus('saved');
-      }, 300);
-    }
+    });
+  }
 
-    function loadTodayData() {
-      const entry = getTodayEntry() || { contenido: '', tags: [] };
-      if (textarea) {
-        textarea.value = entry.contenido || '';
-        updateStats(textarea.value);
-      }
-      activeTags = Array.isArray(entry.tags) ? [...entry.tags] : [];
+  function addTag(tagText: string) {
+    let clean = tagText.trim();
+    if (!clean) return;
+    if (!clean.startsWith('#')) clean = `#${clean}`;
+    if (!activeTags.includes(clean)) {
+      activeTags.push(clean);
       renderTags();
-      setStatus('saved');
-    }
-
-    // Inicializar listeners y datos
-    loadTodayData();
-
-    textarea?.addEventListener('input', () => {
-      setStatus('unsaved');
-      const content = textarea.value;
-      updateStats(content);
-
-      if (debounceTimeout) clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(() => {
-        persistEntry();
-      }, 600);
-    });
-
-    saveBtn?.addEventListener('click', () => {
-      if (debounceTimeout) clearTimeout(debounceTimeout);
       persistEntry();
-    });
+    }
+    if (tagInput) tagInput.value = '';
+  }
 
-    window.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-        e.preventDefault();
+  function persistEntry() {
+    setStatus('saving');
+    const content = textarea ? textarea.value : '';
+    saveTodayEntry({
+      contenido: content,
+      tags: [...activeTags]
+    });
+    setTimeout(() => {
+      setStatus('saved');
+    }, 300);
+  }
+
+  function loadTodayData() {
+    const entry = getTodayEntry() || { contenido: '', tags: [] };
+    if (textarea) {
+      textarea.value = entry.contenido || '';
+      updateStats(textarea.value);
+    }
+    activeTags = Array.isArray(entry.tags) ? [...entry.tags] : [];
+    renderTags();
+    setStatus('saved');
+  }
+
+  // Initialize data and listeners
+  loadTodayData();
+
+  textarea?.addEventListener('input', () => {
+    setStatus('unsaved');
+    const content = textarea.value;
+    updateStats(content);
+
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      persistEntry();
+    }, 600);
+  });
+
+  saveBtn?.addEventListener('click', () => {
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+    persistEntry();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+      e.preventDefault();
+      persistEntry();
+    }
+  });
+
+  clearBtn?.addEventListener('click', () => {
+    if (!textarea) return;
+    if (textarea.value.trim().length > 0 || activeTags.length > 0) {
+      if (confirm("Are you sure you want to clear today's written entry?")) {
+        textarea.value = '';
+        activeTags = [];
+        renderTags();
+        updateStats('');
         persistEntry();
       }
-    });
+    }
+  });
 
-    clearBtn?.addEventListener('click', () => {
-      if (!textarea) return;
-      if (textarea.value.trim().length > 0) {
-        if (confirm('Are you sure you want to clear today\'s written entry?')) {
-          textarea.value = '';
-          activeTags = [];
-          renderTags();
-          updateStats('');
-          persistEntry();
-        }
-      }
-    });
+  addTagBtn?.addEventListener('click', () => {
+    if (tagInput) addTag(tagInput.value);
+  });
 
-    addTagBtn?.addEventListener('click', () => {
-      if (tagInput) addTag(tagInput.value);
-    });
+  tagInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag(tagInput.value);
+    }
+  });
 
-    tagInput?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        addTag(tagInput.value);
-      }
+  suggestionBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tag = btn.dataset.tag;
+      if (tag) addTag(tag);
     });
+  });
 
-    suggestionBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const tag = btn.dataset.tag;
-        if (tag) addTag(tag);
-      });
-    });
-
-    window.addEventListener('diary:entry-updated', (e: Event) => {
-      const customEvt = e as CustomEvent;
-      if (customEvt.detail?.seeded) {
-        loadTodayData();
-      }
-    });
+  window.addEventListener('diary:entry-updated', (e: Event) => {
+    const customEvt = e as CustomEvent;
+    if (customEvt.detail?.seeded) {
+      loadTodayData();
+    }
   });
 </script>
